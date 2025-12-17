@@ -47,7 +47,7 @@ const About = () => {
       bio: 'Memiliki visi untuk menciptakan rumah yang lebih nyaman bagi semua orang'
     },
     {
-      name: 'Sarah Wijaya',
+      name: 'Yoko Ono',
       role: 'Head of Design',
       image: '👩‍🎨',
       bio: 'Desainer interior berpengalaman dengan passion untuk estetika ruangan'

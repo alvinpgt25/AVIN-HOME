@@ -1,9 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 import CartItem from '../../components/CartItem/CartItem';
-import { FaShoppingCart, FaTrash, FaArrowRight, FaPlusCircle, FaShoppingBag } from 'react-icons/fa';
+import { 
+  FaShoppingCart, 
+  FaTrash, 
+  FaArrowRight, 
+  FaShoppingBag,
+  FaTruck,
+  FaShieldAlt,
+  FaExchangeAlt
+} from 'react-icons/fa';
 import './Cart.css';
 
 const Cart = () => {
@@ -11,6 +19,19 @@ const Cart = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [showConfirmClear, setShowConfirmClear] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Deteksi ukuran layar
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const handleCheckout = () => {
     if (!user) {
@@ -35,7 +56,7 @@ const Cart = () => {
             </div>
             <h2>Keranjang Belanja Kosong</h2>
             <p>Tambahkan produk terlebih dahulu sebelum melanjutkan belanja</p>
-            <Link to="/products" className="btn">
+            <Link to="/products" className="btn btn-primary">
               <FaShoppingBag style={{ marginRight: '10px' }} />
               Lihat Produk
             </Link>
@@ -47,7 +68,7 @@ const Cart = () => {
 
   const subtotal = getCartTotal();
   const shippingFee = subtotal > 2000000 ? 0 : 50000;
-  const tax = subtotal * 0.11; // 11% PPN
+  const tax = subtotal * 0.11;
   const total = subtotal + shippingFee + tax;
 
   return (
@@ -61,7 +82,7 @@ const Cart = () => {
         <div className="cart-content">
           <div className="cart-items-section">
             <div className="cart-header">
-              <h2>Produk</h2>
+              <h2>Produk di Keranjang</h2>
               <button 
                 className="clear-cart-btn"
                 onClick={() => setShowConfirmClear(true)}
@@ -115,9 +136,11 @@ const Cart = () => {
                   Lanjut ke Checkout <FaArrowRight />
                 </button>
                 
-                <Link to="/products" className="continue-shopping">
-                  Lanjutkan Belanja
-                </Link>
+                {!isMobile && (
+                  <Link to="/products" className="continue-shopping">
+                    Lanjutkan Belanja
+                  </Link>
+                )}
               </div>
 
               {shippingFee > 0 && (
@@ -132,7 +155,9 @@ const Cart = () => {
 
             <div className="cart-features">
               <div className="feature">
-                <div className="feature-icon">🛡️</div>
+                <div className="feature-icon">
+                  <FaShieldAlt style={{ color: '#4c6ef5' }} />
+                </div>
                 <div className="feature-text">
                   <strong>Garansi 2 Tahun</strong>
                   <p>Semua produk dilindungi garansi</p>
@@ -140,7 +165,9 @@ const Cart = () => {
               </div>
               
               <div className="feature">
-                <div className="feature-icon">🚚</div>
+                <div className="feature-icon">
+                  <FaTruck style={{ color: '#4c6ef5' }} />
+                </div>
                 <div className="feature-text">
                   <strong>Pengiriman Cepat</strong>
                   <p>Estimasi 3-7 hari kerja</p>
@@ -148,7 +175,9 @@ const Cart = () => {
               </div>
               
               <div className="feature">
-                <div className="feature-icon">🔄</div>
+                <div className="feature-icon">
+                  <FaExchangeAlt style={{ color: '#4c6ef5' }} />
+                </div>
                 <div className="feature-text">
                   <strong>Pengembalian Mudah</strong>
                   <p>14 hari pengembalian</p>

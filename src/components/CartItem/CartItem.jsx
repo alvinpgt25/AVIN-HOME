@@ -19,59 +19,77 @@ const CartItem = ({ item }) => {
   };
 
   const handleRemove = () => {
-    removeFromCart(item.id);
+    if (window.confirm(`Hapus "${item.name}" dari keranjang?`)) {
+      removeFromCart(item.id);
+    }
   };
 
   return (
     <div className="cart-item">
-      <div className="cart-item-image">
-        <img src={item.image} alt={item.name} />
-      </div>
-      
-      <div className="cart-item-info">
-        <h3 className="cart-item-name">{item.name}</h3>
-        <p className="cart-item-description">{item.description}</p>
+      <div className="cart-item-top">
+        <div className="cart-item-image">
+          <img 
+            src={item.image || '/default-product.jpg'} 
+            alt={item.name} 
+            loading="lazy"
+          />
+        </div>
         
-        <div className="cart-item-price">
-          <span className="current-price">Rp {finalPrice.toLocaleString()}</span>
-          {item.discountPrice && (
-            <span className="original-price">Rp {item.price.toLocaleString()}</span>
-          )}
+        <div className="cart-item-info">
+          <h3 className="cart-item-name">{item.name}</h3>
+          <p className="cart-item-description">{item.description}</p>
+          
+          <div className="cart-item-price-container">
+            <span className="cart-item-price-current">Rp {finalPrice.toLocaleString('id-ID')}</span>
+            {item.discountPrice && item.discountPrice < item.price && (
+              <span className="cart-item-price-original">Rp {item.price.toLocaleString('id-ID')}</span>
+            )}
+          </div>
         </div>
       </div>
       
-      <div className="cart-item-quantity">
-        <button 
-          className="quantity-btn" 
-          onClick={handleDecrement}
-          aria-label="Kurangi jumlah"
-        >
-          <FaMinus />
-        </button>
+      <div className="cart-item-bottom">
+        <div className="cart-item-quantity">
+          <div className="quantity-controls">
+            <button 
+              className="quantity-btn" 
+              onClick={handleDecrement}
+              aria-label="Kurangi jumlah"
+              disabled={item.quantity <= 1}
+              title="Kurangi"
+            >
+              <FaMinus />
+            </button>
+            
+            <span className="quantity-display">{item.quantity}</span>
+            
+            <button 
+              className="quantity-btn" 
+              onClick={handleIncrement}
+              aria-label="Tambah jumlah"
+              title="Tambah"
+            >
+              <FaPlus />
+            </button>
+          </div>
+        </div>
         
-        <span className="quantity">{item.quantity}</span>
+        <div className="cart-item-total">
+          <span className="cart-item-total-label">Subtotal:</span>
+          <span className="cart-item-total-price">Rp {totalPrice.toLocaleString('id-ID')}</span>
+        </div>
         
-        <button 
-          className="quantity-btn" 
-          onClick={handleIncrement}
-          aria-label="Tambah jumlah"
-        >
-          <FaPlus />
-        </button>
-      </div>
-      
-      <div className="cart-item-total">
-        <span className="total-price">Rp {totalPrice.toLocaleString()}</span>
-      </div>
-      
-      <div className="cart-item-actions">
-        <button 
-          className="remove-btn" 
-          onClick={handleRemove}
-          aria-label="Hapus item"
-        >
-          <FaTrash />
-        </button>
+        <div className="cart-item-actions">
+          <button 
+            className="remove-btn" 
+            onClick={handleRemove}
+            aria-label="Hapus item"
+            title="Hapus dari keranjang"
+          >
+            <FaTrash />
+            <span className="remove-btn-text">Hapus</span>
+          </button>
+        </div>
       </div>
     </div>
   );

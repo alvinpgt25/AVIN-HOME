@@ -15,7 +15,14 @@ import {
   FaSignOutAlt,
   FaArrowRight,
   FaCouch,
-  FaStar
+  FaStar,
+  FaShieldAlt,
+  FaUsers,
+  FaStore,
+  FaShoppingBag,
+  FaInfoCircle,
+  FaPhoneAlt,
+  FaUserPlus
 } from 'react-icons/fa';
 import './Header.css';
 
@@ -60,16 +67,18 @@ const Header = () => {
   };
 
   const adminMenu = [
-    { path: '/admin/dashboard', label: 'Dashboard', icon: <FaHome /> },
+    { path: '/admin/dashboard', label: 'Dashboard', icon: <FaChartBar /> },
     { path: '/admin/products', label: 'Produk', icon: <FaBox /> },
-    { path: '/admin/sales', label: 'Laporan', icon: <FaChartBar /> },
+    { path: '/admin/orders', label: 'Pesanan', icon: <FaShoppingBag /> },
+    { path: '/admin/users', label: 'Pengguna', icon: <FaUsers /> },
   ];
 
   const customerMenu = [
     { path: '/', label: 'Beranda', icon: <FaHome /> },
     { path: '/products', label: 'Produk', icon: <FaBox /> },
     { path: '/cart', label: 'Keranjang', icon: <FaShoppingCart /> },
-    { path: '/checkout', label: 'Checkout', icon: <FaArrowRight /> },
+    { path: '/customer/orders', label: 'Pesanan Saya', icon: <FaShoppingBag /> },
+    { path: '/customer/profile', label: 'Profil', icon: <FaUser /> },
   ];
 
   const quickSearchTerms = ['Sofa', 'Meja Makan', 'Tempat Tidur', 'Lemari', 'Kursi', 'Lampu', 'Dapur'];
@@ -104,13 +113,13 @@ const Header = () => {
             {/* Desktop Navigation */}
             <nav className="nav-desktop">
               <ul className="nav-list">
-                <li><Link to="/" className="nav-link">Beranda</Link></li>
-                <li><Link to="/products" className="nav-link">Produk</Link></li>
-                <li><Link to="/about" className="nav-link">Tentang</Link></li>
-                <li><Link to="/contact" className="nav-link">Kontak</Link></li>
+                <li><Link to="/" className="nav-link"><FaHome /> Beranda</Link></li>
+                <li><Link to="/products" className="nav-link"><FaBox /> Produk</Link></li>
+                <li><Link to="/about" className="nav-link"><FaInfoCircle /> Tentang</Link></li>
+                <li><Link to="/contact" className="nav-link"><FaPhoneAlt /> Kontak</Link></li>
                 {user?.role === 'admin' && (
                   <li className="nav-dropdown">
-                    <span className="nav-link">Admin</span>
+                    <span className="nav-link"><FaChartBar /> Admin</span>
                     <div className="dropdown-menu">
                       {adminMenu.map((item) => (
                         <Link key={item.path} to={item.path} className="dropdown-item">
@@ -118,6 +127,11 @@ const Header = () => {
                           <span>{item.label}</span>
                         </Link>
                       ))}
+                      <div className="dropdown-divider"></div>
+                      <button onClick={handleLogout} className="dropdown-item logout">
+                        <FaSignOutAlt />
+                        <span>Keluar</span>
+                      </button>
                     </div>
                   </li>
                 )}
@@ -143,25 +157,29 @@ const Header = () => {
                 )}
               </Link>
 
-              {/* User Menu */}
+              {/* User Menu - Desktop */}
               <div className="user-menu">
-                <button className="action-btn user-btn">
-                  <FaUser />
-                </button>
-                <div className="user-dropdown">
-                  {user ? (
-                    <>
+                {user ? (
+                  <>
+                    <button className="action-btn user-btn">
+                      <div className={`user-avatar ${user.role}`}>
+                        {user.name.charAt(0).toUpperCase()}
+                      </div>
+                    </button>
+                    <div className="user-dropdown">
                       <div className="user-info">
-                        <div className="user-avatar">
+                        <div className={`user-avatar ${user.role}`}>
                           {user.name.charAt(0).toUpperCase()}
                         </div>
                         <div className="user-details">
                           <h4>{user.name}</h4>
-                          <p className="user-role">{user.role === 'admin' ? 'Administrator' : 'Customer'}</p>
+                          <p className="user-role">
+                            {user.role === 'admin' ? 'Administrator' : 'Pelanggan'}
+                          </p>
                         </div>
                       </div>
                       <div className="dropdown-divider"></div>
-                      {user.role === 'admin' && (
+                      {user.role === 'admin' ? (
                         <>
                           {adminMenu.map((item) => (
                             <Link key={item.path} to={item.path} className="dropdown-item">
@@ -171,29 +189,59 @@ const Header = () => {
                           ))}
                           <div className="dropdown-divider"></div>
                         </>
+                      ) : (
+                        <>
+                          {customerMenu.map((item) => (
+                            <Link key={item.path} to={item.path} className="dropdown-item">
+                              {item.icon}
+                              <span>{item.label}</span>
+                            </Link>
+                          ))}
+                          <div className="dropdown-divider"></div>
+                        </>
                       )}
-                      <Link to="/profile" className="dropdown-item">
-                        <FaUser />
-                        <span>Profil Saya</span>
-                      </Link>
                       <button onClick={handleLogout} className="dropdown-item logout">
                         <FaSignOutAlt />
                         <span>Keluar</span>
                       </button>
-                    </>
-                  ) : (
-                    <>
-                      <Link to="/login" className="dropdown-item">
-                        <FaUser />
-                        <span>Masuk</span>
+                    </div>
+                  </>
+                ) : (
+                  <div className="login-dropdown">
+                    <button className="action-btn user-btn">
+                      <FaUser />
+                    </button>
+                    <div className="user-dropdown">
+                      <div className="dropdown-header">
+                        <h4>Pilih Login</h4>
+                        <p>Masuk sesuai dengan peran Anda</p>
+                      </div>
+                      <div className="dropdown-divider"></div>
+                      <Link to="/customer/login" className="dropdown-item customer-login">
+                        <FaUsers />
+                        <div>
+                          <strong>Login Pelanggan</strong><br />
+                          <small>Akses belanja & transaksi</small>
+                        </div>
                       </Link>
+                      <Link to="/admin/login" className="dropdown-item admin-login">
+                        <FaShieldAlt />
+                        <div>
+                          <strong>Login Admin</strong><br />
+                          <small>Manajemen sistem</small>
+                        </div>
+                      </Link>
+                      <div className="dropdown-divider"></div>
                       <Link to="/register" className="dropdown-item">
-                        <FaUser />
-                        <span>Daftar</span>
+                        <FaUserPlus />
+                        <div>
+                          <strong>Daftar Pelanggan</strong><br />
+                          <small>Buat akun baru</small>
+                        </div>
                       </Link>
-                    </>
-                  )}
-                </div>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Mobile Menu Toggle */}
@@ -211,52 +259,92 @@ const Header = () => {
         {/* Mobile Sidebar Navigation */}
         <div className={`mobile-sidebar ${isMenuOpen ? 'open' : ''}`}>
           <div className="mobile-sidebar-header">
-            <div className="mobile-user-info">
-              {user ? (
-                <>
-                  <div className="mobile-user-avatar">
-                    {user.name.charAt(0).toUpperCase()}
-                  </div>
-                  <div>
-                    <h4>{user.name}</h4>
-                    <p>{user.role === 'admin' ? 'Administrator' : 'Customer'}</p>
-                  </div>
-                </>
-              ) : (
-                <div className="mobile-auth-buttons">
-                  <Link to="/login" className="btn btn-primary" onClick={() => setIsMenuOpen(false)}>Masuk</Link>
-                  <Link to="/register" className="btn btn-secondary" onClick={() => setIsMenuOpen(false)}>Daftar</Link>
+            {user ? (
+              <div className="mobile-user-info">
+                <div className={`mobile-user-avatar ${user.role}`}>
+                  {user.name.charAt(0).toUpperCase()}
                 </div>
-              )}
-            </div>
+                <div>
+                  <h4>{user.name}</h4>
+                  <p>{user.role === 'admin' ? 'Administrator' : 'Pelanggan'}</p>
+                </div>
+              </div>
+            ) : (
+              <div className="auth-buttons-header">
+                <h4>Pilih Login</h4>
+                <p>Masuk sesuai peran Anda</p>
+              </div>
+            )}
             <button className="close-sidebar" onClick={() => setIsMenuOpen(false)}>
               <FaTimes />
             </button>
           </div>
 
+          {!user && (
+            <div className="mobile-sidebar-auth">
+              <div className="mobile-auth-buttons">
+                <Link to="/customer/login" className="btn btn-primary" onClick={() => setIsMenuOpen(false)}>
+                  <FaUsers /> Login Pelanggan
+                </Link>
+                <Link to="/admin/login" className="btn btn-secondary" onClick={() => setIsMenuOpen(false)}>
+                  <FaShieldAlt /> Login Admin
+                </Link>
+                <div className="divider-text">
+                  <span>ATAU</span>
+                </div>
+                <Link to="/register" className="btn btn-outline" onClick={() => setIsMenuOpen(false)}>
+                  <FaUserPlus /> Daftar Pelanggan
+                </Link>
+              </div>
+            </div>
+          )}
+
           <nav className="mobile-sidebar-nav">
-            {customerMenu.map((item) => (
-              <Link 
-                key={item.path} 
-                to={item.path} 
-                className="mobile-nav-item"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                <span className="mobile-nav-icon">{item.icon}</span>
-                <span className="mobile-nav-label">{item.label}</span>
-              </Link>
-            ))}
+            {/* Menu Utama */}
+            <Link to="/" className="mobile-nav-item" onClick={() => setIsMenuOpen(false)}>
+              <span className="mobile-nav-icon"><FaHome /></span>
+              <span className="mobile-nav-label">Beranda</span>
+            </Link>
+            
+            <Link to="/products" className="mobile-nav-item" onClick={() => setIsMenuOpen(false)}>
+              <span className="mobile-nav-icon"><FaBox /></span>
+              <span className="mobile-nav-label">Produk</span>
+            </Link>
+
+            <Link to="/cart" className="mobile-nav-item" onClick={() => setIsMenuOpen(false)}>
+              <span className="mobile-nav-icon"><FaShoppingCart /></span>
+              <span className="mobile-nav-label">Keranjang</span>
+              {cartItemCount > 0 && (
+                <span className="mobile-badge">{cartItemCount}</span>
+              )}
+            </Link>
             
             <Link to="/about" className="mobile-nav-item" onClick={() => setIsMenuOpen(false)}>
-              <span className="mobile-nav-icon">ℹ️</span>
+              <span className="mobile-nav-icon"><FaInfoCircle /></span>
               <span className="mobile-nav-label">Tentang Kami</span>
             </Link>
             
             <Link to="/contact" className="mobile-nav-item" onClick={() => setIsMenuOpen(false)}>
-              <span className="mobile-nav-icon">📞</span>
+              <span className="mobile-nav-icon"><FaPhoneAlt /></span>
               <span className="mobile-nav-label">Kontak</span>
             </Link>
             
+            {/* Menu Customer */}
+            {user && user.role === 'customer' && (
+              <>
+                <div className="mobile-nav-divider">Akun Saya</div>
+                <Link to="/customer/orders" className="mobile-nav-item" onClick={() => setIsMenuOpen(false)}>
+                  <span className="mobile-nav-icon"><FaShoppingBag /></span>
+                  <span className="mobile-nav-label">Pesanan Saya</span>
+                </Link>
+                <Link to="/customer/profile" className="mobile-nav-item" onClick={() => setIsMenuOpen(false)}>
+                  <span className="mobile-nav-icon"><FaUser /></span>
+                  <span className="mobile-nav-label">Profil Saya</span>
+                </Link>
+              </>
+            )}
+            
+            {/* Menu Admin */}
             {user?.role === 'admin' && (
               <>
                 <div className="mobile-nav-divider">Admin Panel</div>
@@ -276,10 +364,17 @@ const Header = () => {
           </nav>
 
           <div className="mobile-sidebar-footer">
-            {user && (
+            {user ? (
               <button onClick={() => { handleLogout(); setIsMenuOpen(false); }} className="btn btn-secondary logout-btn">
                 <FaSignOutAlt /> Keluar
               </button>
+            ) : (
+              <div className="guest-footer">
+                <p>Belum punya akun?</p>
+                <Link to="/register" className="btn btn-outline" onClick={() => setIsMenuOpen(false)}>
+                  Daftar Sekarang
+                </Link>
+              </div>
             )}
           </div>
         </div>
