@@ -43,7 +43,7 @@ const AppContent = () => {
 
       <Header />
       <main className="main-content">
-        <Routes location={location}>
+        <Routes>
           {/* Public Routes */}
           <Route path="/" element={<Home />} />
           <Route path="/products" element={<Products />} />
@@ -55,6 +55,7 @@ const AppContent = () => {
           {/* Auth Routes */}
           <Route path="/" element={<AuthLayout />}>
             <Route path="customer/login" element={<CustomerLogin />} />
+            {/* Admin login hanya bisa diakses melalui URL manual */}
             <Route path="admin/login" element={<AdminLogin />} />
           </Route>
           
